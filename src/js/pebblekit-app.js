@@ -1,4 +1,9 @@
-
+// js/pebblekt-app.js
+// tested confirmed specific filename is not required!!!
+//
+// This is a PebbleKit Javascript project, not pebble.js
+// http://developer.getpebble.com/guides/pebble-apps/pebblekit-js
+//
 // var xml = require('xml'); // does not appear to be required, methods from other js modules are accessible, 2015-05-10 john
 
 // https://developer.getpebble.com/docs/pebblejs/#require-path
@@ -11,10 +16,13 @@
 
 */
 
+// var xml = require('xml'); 
+
 //var build_num = "06a";
 
 
-var m_station = "DBRK"; //"WOAK"; //"DBRK"; //"POWL"; //"PLZA";
+var m_stationDefault = "DBRK"; //"WOAK"; //"DBRK"; //"POWL"; //"PLZA";
+var m_station = m_stationDefault;
 var m_direction = "N";
 
 var m_xml_bart_etd = "http://api.bart.gov/api/etd.aspx?cmd=etd&orig=" + m_station + "&key=MW9S-E7SL-26DU-VV8V&dir=" + m_direction;
@@ -25,16 +33,17 @@ var m_xml_bart_etd = "http://api.bart.gov/api/etd.aspx?cmd=etd&orig=" + m_statio
 // We use the fake "PBL" symbol as default
 var defaultSymbol = "PBL";
 var symbol = defaultSymbol;
+var station = symbol;
 
 //var test = require("yo");
 
-var req1 = new XMLHttpRequest();
+//var req1 = new XMLHttpRequest();
 
-var rand1 = Math.random();
+//var rand1 = Math.random();
 
 //var doc2 = new DOMParser();  // ReferenceError: Can't find variable: DOMParser
 
-var string = '<!DOCTYPE html><html><head></head><body>content</body></html>';
+//var string = '<!DOCTYPE html><html><head></head><body>content</body></html>';
 
 //var doc = new DOMParser().parseFromString(string, 'text/xml');
 // [PHONE] pebble-app.js:?: Error: BART Realtime: ReferenceError: Can't find variable: DOMParser
@@ -107,13 +116,13 @@ function john3(tag, xml) {
 // Fetch stock data for a given stock symbol (NYSE or NASDAQ only) from markitondemand.com
 // & send the stock price back to the watch via app message
 // API documentation at http://dev.markitondemand.com/#doc
-function fetchStockQuote(symbol, isInitMsg) {
+function fetchStockQuote(station, isInitMsg) {
  
   var rand2 = Math.random();
   
 //  console.log("fetchStockQuote(...)  rand2 = ",rand2);
 
-    console.log("fetchStockQuote(...)  symbol = ", symbol);
+    console.log("fetchStockQuote(...)  station = ", station);
   
   //  console.log(doc1);
   
@@ -121,7 +130,7 @@ function fetchStockQuote(symbol, isInitMsg) {
   
 //  var xml2js = require('xml2js');
    
-   var xml = "<root>This is a root object!<child>This a child</child></root>";
+//   var xml = "<root>This is a root object!<child>This a child</child></root>";
 
 //   xml2js.parseString(xml, function (error, result) {
 //       console.log(result); // JSObject
@@ -148,7 +157,7 @@ function fetchStockQuote(symbol, isInitMsg) {
 
   
   var response;
-  var station = "PLZA"; // POWL DBRK? NBRK?
+  //var station = "PLZA"; // POWL DBRK? NBRK?
   var req = new XMLHttpRequest();
   // build the GET request
   // http://api.bart.gov/api/etd.aspx?cmd=etd&orig=PLZA&key=MW9S-E7SL-26DU-VV8V&dir=n
@@ -169,7 +178,7 @@ function fetchStockQuote(symbol, isInitMsg) {
   //var url_json = "http://dev.markitondemand.com";
   //var url_json = "http://notfound12345.123"; // execution stops at req.onload
   
-  var url_json = "http://maksil.net/test1/json/json2-ansi.txt";
+//  var url_json = "http://maksil.net/test1/json/json2-ansi.txt";
   //var url_json = "http://maksil.net/test1/json/json2-ansi.txt.not.found";
   
   
@@ -179,9 +188,10 @@ function fetchStockQuote(symbol, isInitMsg) {
  
   
   if (m_station.toUpperCase() == "DBRK")
-    { m_direction = "N"}
+    { m_direction = "N"; }
   else if (m_station.toUpperCase() == "PLZA")
-    { m_direction = "S"}
+    { m_direction = "S"; }
+  
   
   m_xml_bart_etd = "http://api.bart.gov/api/etd.aspx?cmd=etd&orig=" + m_station + "&key=MW9S-E7SL-26DU-VV8V&dir=" + m_direction;
   
@@ -266,8 +276,9 @@ console.log(" john3a() = " + john3a());
           
           //var s = "ver1";
           //var s1 = s.replace("1",build_num);
-          msg.price = minutes.toString() + "  min";
-          msg.symbol = symbol; //m_station; //"dbrk"; //s1; //"JOHN"; //egd1,  this can be retreived from the cloud, does not need iOS companion app
+          //msg.price = minutes.toString() + "  min";
+          msg.minutes = minutes.toString() + "  min";
+          msg.station = station; //m_station; //"dbrk"; //s1; //"JOHN"; //egd1,  this can be retreived from the cloud, does not need iOS companion app
           Pebble.sendAppMessage(msg);
           //Pebble.sendAppMessage( { '0': 16, '1':'string1'});
           //Pebble.sendAppMessage( { 'price': 16});
@@ -329,10 +340,12 @@ Pebble.addEventListener("ready",
                           
                           //console.log("connect! " + e.ready.toString());
                           console.log("Pebble.addEventListener(ready) e.type = " + e.type);
-                           console.log("appmessage : e.payload = " + e.payload);
+                          console.log("appmessage : e.payload = " + e.payload);
                           // Fetch saved symbol from local storage (using
                           // standard localStorage webAPI)
                           symbol2 = localStorage.getItem("symbol");
+
+                  //        m_station = localStorage.getItem("station");
                           
 console.log("Pebble.addEventListener(...) symbol = " + symbol2);
                           
@@ -372,7 +385,7 @@ Pebble.addEventListener("appmessage",
  //                         window.navigator.
 
                           console.log("Pebble.addEventListener(message) e.type = " + e.type);                          
-                          console.log("Pebble.addEventListener(...) previous symbol = " + symbol);
+                          console.log("Pebble.addEventListener(...) previous symbol = " + symbol); // rename to m_symbol
                           
                             console.log("message");
                           
@@ -381,6 +394,9 @@ Pebble.addEventListener("appmessage",
                             console.log("appmessage : e.payload.symbol = " + e.payload.symbol);
                             console.log("appmessage : e.payload.message = " + e.payload.message);
                             console.log("appmessage : e.payload.status = " + e.payload.status);
+                            console.log("appmessage : e.payload.station = " + e.payload.station);
+                          
+                          var symbol_prev = symbol;
                           
                           var isInitMsg;
                           if (e.payload.init) {
@@ -393,12 +409,18 @@ Pebble.addEventListener("appmessage",
                             isInitMsg = false;
                             fetchStockQuote(symbol, isInitMsg);
                           }
-                          else if (e.payload.symbol) {
-                            console.log("else if (e.payload.symbol)");                            
-                            m_station = symbol = e.payload.symbol;
+                          else if (e.payload.station) {
+                            console.log("else if (e.payload.station)");                            
+                            var stationPayload = e.payload.station;
+                            
+                            if (stationPayload.toUpperCase() == "DBRK" || stationPayload.toUpperCase() == "PLZA")  { 
+                              m_station = station = stationPayload; 
+                            }
+                            
                             localStorage.setItem("symbol", symbol);
+                            localStorage.setItem("station", m_station);
                             isInitMsg = false;
-                            fetchStockQuote(symbol, isInitMsg);
+                            fetchStockQuote(m_station, isInitMsg);
                           }
                         
                         }); // Pebble.addEventListener(...)

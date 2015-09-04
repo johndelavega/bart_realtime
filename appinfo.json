@@ -2,7 +2,9 @@
     "appKeys": {
         "fetch": 1,
         "init": 0,
+        "minutes": 5,
         "price": 3,
+        "station": 4,
         "symbol": 2
     },
     "capabilities": [
@@ -21,7 +23,7 @@
         "basalt"
     ],
     "uuid": "0f18ff7d-6e2c-42a4-a34d-8ff8d1c2e8a4",
-    "versionLabel": "0.07",
+    "versionLabel": "0.10",
     "watchapp": {
         "watchface": false
     }

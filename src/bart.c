@@ -1,7 +1,12 @@
+// bart.c
+//
+
 //#include <pebble.h>
 
-// BART Realtime3
-// verson .09
+// BART Realtime
+// verson .10 - stable build
+// 2015-09-04  move xml.js to js folder, moved/renamed pebble-js-app.js to js/pebblekit-app.js
+// 2015-08-31  renamed symbol to station variable names
 // 2015-08-30  replaced Leaving with 0; sort ascending
 // 2015-08-29  added // process multiple <etd>  function john4(tag, xml, level) {
 // 2015-06-26  renamed quotes.c to bart.c, deleted antry.c/h, added version info to UI
@@ -21,7 +26,7 @@
 
   
   
-#define STR_APPVERSION_BUFFER "v0.09"
+#define STR_APPVERSION_BUFFER "v0.10"
 
   
 static Window    *window;
@@ -30,31 +35,42 @@ static TextLayer *symbol_layer;
 static TextLayer *price_layer;
 static TextLayer *appversion_layer;
 
+
 static char symbol[6]; //egd1 was 5 for stock symbol length
 static char price[20];
+
+static char station[6];
+static char minutes[20];
+
 static bool wasFirstMsg;
 static bool dataInited;
-static int refreshKey;
-static char *refreshSymbol;
+static int  refreshKey;
+static char *refreshStation; //*refreshSymbol;
+
 
 static char symbol1[] = "DBRK";
 
 enum {
-  QUOTE_KEY_INIT = 0x0,
-  QUOTE_KEY_FETCH = 0x1,
+  QUOTE_KEY_INIT   = 0x0,
+  QUOTE_KEY_FETCH  = 0x1,
   QUOTE_KEY_SYMBOL = 0x2,
-  QUOTE_KEY_PRICE = 0x3,
+  QUOTE_KEY_PRICE  = 0x3,
+  
+  BART_KEY_STATION = 0x4,
+  BART_KEY_MINUTES = 0x5, 
 };
 
-static bool send_to_phone_multi(int quote_key, char *symbol) {
+
+
+static bool send_to_phone_multi(int bart_key, char *station) {
   
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "send_to_phone_multi(...) quote_key = %d, symbol = %s", quote_key, symbol);
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "send_to_phone_multi(...) bart_key = %d, station = %s", bart_key, station);
   
   //APP_LOG(APP_LOG_LEVEL_DEBUG,  "symbol = ", symbol);
   
 //egd1  return false;
   
-  if ((quote_key == -1) && (symbol == NULL)) {
+  if ((bart_key == -1) && (station == NULL)) {
     APP_LOG(APP_LOG_LEVEL_DEBUG, "no data to send");
     // well, the "nothing" that was sent to us was queued, anyway ...
     return true;
@@ -66,9 +82,9 @@ static bool send_to_phone_multi(int quote_key, char *symbol) {
     return false;
   }
 
-  Tuplet tuple = (symbol == NULL)
-                      ? TupletInteger(quote_key, 1)
-                      : TupletCString(quote_key, symbol);
+  Tuplet tuple = (station == NULL)
+                      ? TupletInteger(bart_key, 1)
+                      : TupletCString(bart_key, station);
   dict_write_tuplet(iter, &tuple);
   dict_write_end(iter);
 
@@ -95,7 +111,7 @@ static void send_to_phone(int quote_key) {
 }
 */
 
-
+/*
 static void set_symbol_msg(char *symbolName) {
       APP_LOG(APP_LOG_LEVEL_DEBUG, "set_symbol_msg(...) = %s", symbolName );
 
@@ -109,6 +125,27 @@ static void set_symbol_msg(char *symbolName) {
   }
 }
 
+*/
+
+
+
+static void set_station_msg(char *station) {
+      APP_LOG(APP_LOG_LEVEL_DEBUG, "set_station_msg(...) = %s", station );
+
+    //    APP_LOG(APP_LOG_LEVEL_DEBUG, *symbolName );
+  
+  bool queued = send_to_phone_multi(BART_KEY_STATION, station);
+  
+  if (!queued) {
+    refreshKey = BART_KEY_STATION;
+    refreshStation = station; //refreshSymbol = station;
+  }
+}
+
+
+
+
+
 
 
 
@@ -121,7 +158,11 @@ static void in_received_handler(DictionaryIterator *iter, void *context) {
   Tuple *init_tuple   = dict_find(iter, QUOTE_KEY_INIT);
   Tuple *symbol_tuple = dict_find(iter, QUOTE_KEY_SYMBOL);
   Tuple *price_tuple  = dict_find(iter, QUOTE_KEY_PRICE);
-//Tuple *price_tuple  = dict_find(iter, 0x1);  //egd1
+  
+  Tuple *station_tuple  = dict_find(iter, BART_KEY_STATION);
+  Tuple *minutes_tuple  = dict_find(iter, BART_KEY_MINUTES);
+
+  //Tuple *price_tuple  = dict_find(iter, 0x1);  //egd1
   
  //    APP_LOG(APP_LOG_LEVEL_DEBUG, " symbol_tuple = %d, %s", symbol_tuple, symbol_tuple); 
   
@@ -150,7 +191,23 @@ static void in_received_handler(DictionaryIterator *iter, void *context) {
     strncpy(price, price_tuple->value->cstring, 20);
     text_layer_set_text(price_layer, price);
   }
+
+  
+  if (station_tuple) {
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "if (station_tuple)"); // JOHN
+    strncpy(station, station_tuple->value->cstring, 6); //egd1 was 5
+    text_layer_set_text(symbol_layer, station);
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "station = %s",station); // JOHN
+  }
  
+  if (minutes_tuple) {
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "if (minutes_tuple)"); 
+    strncpy(minutes, minutes_tuple->value->cstring, 20);
+    text_layer_set_text(price_layer, minutes);
+  }
+  
+  
+  
   
 //  text_layer_set_text(price_layer, "$002.00");
   
@@ -206,7 +263,7 @@ static void up_click_handler(ClickRecognizerRef recognizer, void *context) {
   APP_LOG(APP_LOG_LEVEL_DEBUG, "[BUTTON] up_click_handler(...)");
 
     text_layer_set_text(price_layer, "UP...");
-    set_symbol_msg("PLZA"); //egd1
+    set_station_msg("PLZA"); //egd1
   
  // return;
   
@@ -218,7 +275,7 @@ static void down_click_handler(ClickRecognizerRef recognizer, void *context) {
   APP_LOG(APP_LOG_LEVEL_DEBUG, "[BUTTON] down_click_handler(...)");
 
     text_layer_set_text(price_layer, "DOWN...");
-    set_symbol_msg("DBRK"); //egd1  
+    set_station_msg("DBRK"); //egd1  
   
 //  return;
   
@@ -240,7 +297,7 @@ static void select_click_handler(ClickRecognizerRef recognizer, void *context) {
  
   // this works! egd 2015-06-21
   //set_symbol_msg(symbol1); //egd1
-  set_symbol_msg("DBRK"); //egd1
+  set_station_msg("SEL"); //egd1
   
   // crashes here from the watch but not from emulator
 //  send_to_phone(QUOTE_KEY_FETCH);
@@ -321,7 +378,7 @@ static void window_load(Window *window) {
   
  // send_to_phone(QUOTE_KEY_INIT); //dbg1
  // set_symbol_msg("GOOG");
-   set_symbol_msg(symbol1); //egd1
+   set_station_msg(symbol1); //egd1
   wasFirstMsg = true;
 
 } // static void window_load(Window *window)
@@ -341,7 +398,7 @@ static void init(void) {
   wasFirstMsg = false;
   dataInited = false;
   refreshKey = -1;
-  refreshSymbol = NULL;
+  refreshStation = NULL; //refreshSymbol = NULL;
 
   app_message_init();
 
