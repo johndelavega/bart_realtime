@@ -17,6 +17,7 @@ var m_direction = "N";
 
 var m_xml_bart_etd = "http://api.bart.gov/api/etd.aspx?cmd=etd&orig=" + m_station + "&key=MW9S-E7SL-26DU-VV8V&dir=" + m_direction;
 
+// var m_minutes = [];
 
 
 // We use the fake "PBL" symbol as default
@@ -207,7 +208,9 @@ function fetchStockQuote(symbol, isInitMsg) {
 
 console.log(" john3a() = " + john3a());
 
-        var minutes = john3("minutes",xml);
+        //var minutes = john3("minutes",xml);
+        var minutes =  john5("etd",xml,0);
+        
         console.log(" minutes = " + minutes);
         
         //response = JSON.parse(req.responseText); // JSON = java script object notation
@@ -307,7 +310,7 @@ req.onerror = function(e) {
 
 
 
-/*
+///*
 
 
 // Set callback for the app ready event
@@ -316,24 +319,42 @@ Pebble.addEventListener("ready",
                           
                           //console.log("connect! " + e.ready.toString());
                           console.log("Pebble.addEventListener(ready) e.type = " + e.type);
+                           console.log("appmessage : e.payload = " + e.payload);
                           // Fetch saved symbol from local storage (using
                           // standard localStorage webAPI)
-                          symbol = localStorage.getItem("symbol");
+                          symbol2 = localStorage.getItem("symbol");
                           
-console.log("Pebble.addEventListener(...) symbol = " + symbol);
+console.log("Pebble.addEventListener(...) symbol = " + symbol2);
                           
-                          if (!symbol) {
-                            symbol = "AAPL"; //egd1
+                           var isInitMsg;
+                          
+                          if (!symbol2) {
+                            symbol2 = "AAPL"; //egd1
                           }
                           
-                          var isInitMsg = true;
+                          
+                          fetchStockQuote("DBRK", false); //DBRK 
+                          
+/*
+                          if (e.payload.symbol) {
+                            console.log("else if (e.payload.symbol)");                            
+                            symbol = e.payload.symbol;
+                            localStorage.setItem("symbol", symbol);
+                            isInitMsg = false;
+                            //fetchStockQuote(symbol, isInitMsg);
+                          }
+*/                          
+    //                      var isInitMsg = true;
                           
                     //      fetchStockQuote(symbol, isInitMsg);
                           //fetchStockQuote("AAPL", isInitMsg);  //egd2 ADSK  AAPL MSFT GOOG
                           
                         });
 
-*/
+//*/
+
+
+
 
 // Set callback for appmessage events
 Pebble.addEventListener("appmessage",

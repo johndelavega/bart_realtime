@@ -47,3 +47,145 @@ function john3(tag, xml) {
 } // john3(tag,xml)
 
 //exports.jonh3 = john3; // public function
+
+
+
+
+
+//------------------------------------------------------------
+
+// must be declared outside function for persistency
+var m_minutes = [];
+
+
+// process multiple <etd>
+function john4(tag, xml, level) {
+
+
+    m_minutes = []; // clear reset empty
+
+    var xml_len = xml.length;
+
+    //jsFiddleConsole.log("function john4() ....... tag = " + tag + ",  level = " + level + ",  xml_len = " + xml_len);
+
+
+
+    //var tag = "etd";
+
+    var tag1 = "<" + tag + ">";
+    var tag2 = "</" + tag + ">";
+
+
+    //    jsFiddleConsole.log("john4(),  tag = " + t2);
+
+
+    var pos1 = xml.search(tag1); // position/location
+
+    //    var n2 = xml.search(t2);
+
+    // need to process only 1 etd within while loop!!!
+
+    var i = 0;
+    // while ( (i = i + 2) < 10 )   // OK
+    while ((pos1 = xml.search(tag1)) > -1) {
+
+
+        //      jsFiddleConsole.log(" while i  = " + i++);
+
+        //        jsFiddleConsole.log("john4(),  xml_len = " + xml_len);
+
+        var pos2 = xml.search(tag2);
+
+        pos2 = pos2 + tag2.length;
+
+        //var pos0 = pos2 + tag2.length;
+
+        //pos0 = pos2;
+
+        //var l = n2 - n1; // length of text value
+        //var res = xml.substr(n1 + l1, l); // extract text value
+
+
+        // 2015-04-21
+        if ((tag == "etd") && (xml.search("<destination>") > -1)) {
+
+//            brtDebugXml("etd  xml substring = " + xml.substring(pos1, pos2));
+
+//            brtPrint("john4() 27, destination = " + john3("destination", xml.substring(pos1, pos2)));
+            //jsFiddleConsole.log("john4() 27, destination = ?; tag = " + tag);            
+
+        }
+
+
+        // recursive call
+        if ((tag == "etd") && (xml.search("<estimate>") > -1)) {
+            //            john4("estimate", xml.substr(n1, n0),level+1); // <etd> ... </etd>
+            //jsFiddleConsole.log("john4(), estimate = " + john4("estimate", xml.substr(0, n0)));            
+
+        }
+
+
+
+        // destination abbreviation
+        //jsFiddleConsole.log("john4(), destination = " + john3("destination", xml.substr(0, n0)));
+
+
+
+        if ((tag == "estimate") && (xml.search("<minutes>") > -1)) {
+
+//            brtDebugXml(" estimate xml substring = " + xml.substring(pos1, pos2));
+
+            var minutes = john3("minutes", xml.substring(pos1, pos2));
+            //brtPrint("john4() 8, minutes = " + minutes);
+            m_minutes.push(minutes);
+            //brtPrint("minutes len = " + m_minutes.length);
+            //brtPrint("john4() 8, minutes = " + john3("minutes", xml.substring(pos1, pos2)));  // <<<<<<<<<<<<<<<          
+
+        }
+
+        // recursive call
+        if (tag == "etd") {
+            // process multiple estimates
+            john4("estimate", xml.substring(pos1, pos2), level + 1); // <etd> ... </etd>
+        }
+
+
+
+        xml = xml.substr(pos2, xml_len - pos2); // next <etd> or <estimate>
+        xml_len = xml.length;
+
+        //brtDebugXml(" next xml = " + xml);
+
+
+    } // while    
+
+
+
+    //return "john4()";
+    //return john3("name",m_xml);
+
+
+    //return "version 20, array len = " + m_minutes.length; //john3("abbr",m_xml) + " = " + john3("name",m_xml);
+    return m_minutes;
+
+} // john4(tag,xml)
+
+
+//------------------------------------------------------------
+
+function john5(tag, xml, level) {
+
+    var return1 = john4(tag, xml, level);
+
+    // return as json and process it here
+
+    return return1;
+}
+
+//------------------------------------------------------------
+
+
+
+
+
+

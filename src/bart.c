@@ -1,7 +1,8 @@
 //#include <pebble.h>
 
 // BART Realtime3
-// verson .07
+// verson .08
+// 2015-08-29  added // process multiple <etd>  function john4(tag, xml, level) {
 // 2015-06-26  renamed quotes.c to bart.c, deleted antry.c/h, added version info to UI
 // 2015-06-21  fixed crash problem
 // 2015-05-10
@@ -15,7 +16,7 @@
 
   
   
-#define STR_APPVERSION_BUFFER "v0.07"
+#define STR_APPVERSION_BUFFER "v0.08"
 
   
 static Window    *window;
@@ -25,13 +26,13 @@ static TextLayer *price_layer;
 static TextLayer *appversion_layer;
 
 static char symbol[6]; //egd1 was 5 for stock symbol length
-static char price[10];
+static char price[20];
 static bool wasFirstMsg;
 static bool dataInited;
 static int refreshKey;
 static char *refreshSymbol;
 
-static char symbol1[] = "AAPL";
+static char symbol1[] = "AAP1";
 
 enum {
   QUOTE_KEY_INIT = 0x0,
@@ -141,7 +142,7 @@ static void in_received_handler(DictionaryIterator *iter, void *context) {
  
   if (price_tuple) {
     APP_LOG(APP_LOG_LEVEL_DEBUG, "if (price_tuple)"); 
-    strncpy(price, price_tuple->value->cstring, 10);
+    strncpy(price, price_tuple->value->cstring, 20);
     text_layer_set_text(price_layer, price);
   }
  
@@ -312,7 +313,9 @@ static void window_load(Window *window) {
  // set_symbol_msg("GOOG");
    set_symbol_msg(symbol1); //egd1
   wasFirstMsg = true;
-}
+
+} // static void window_load(Window *window)
+
 
 
 static void window_unload(Window *window) {
