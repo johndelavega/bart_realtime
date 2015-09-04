@@ -14,6 +14,7 @@
     "resources": {
         "media": []
     },
+    "sdkVersion": "2",
     "shortName": "BART Realtime",
     "uuid": "0f18ff7d-6e2c-42a4-a34d-8ff8d1c2e8a4",
     "versionCode": 1,

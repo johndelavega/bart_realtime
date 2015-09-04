@@ -1,3 +1,24 @@
+
+// var xml = require('xml'); // does not appear to be required, methods from other js modules are accessible, 2015-05-10 john
+
+/*
+
+[PHONE] pebble-app.js:?: ReferenceError: require is not defined
+    at pebble-js-app.js:2:11
+[PHONE] pebble-app.js:?: JS failed.
+
+*/
+
+var build_num = "05";
+
+
+var m_station = "DBRK"; //"WOAK"; //"DBRK"; //"POWL"; //"PLZA";
+var m_direction = "N";
+
+var m_xml_bart_etd = "http://api.bart.gov/api/etd.aspx?cmd=etd&orig=" + m_station + "&key=MW9S-E7SL-26DU-VV8V&dir=" + m_direction;
+
+
+
 // We use the fake "PBL" symbol as default
 var defaultSymbol = "PBL";
 var symbol = defaultSymbol;
@@ -19,6 +40,57 @@ var string = '<!DOCTYPE html><html><head></head><body>content</body></html>';
 
 
 //var doc1 = doc.body.innerHTML; 
+
+
+function john1() {
+    return "john1()";
+}
+
+function john2() {
+    return "john2()";
+}
+
+
+/*
+// extract text value based on a tag
+function john3(tag, xml) {
+
+    // <tag attribute="avalue">text content</tag>
+
+    //var token1 = "destination";
+    //var token1 = "name"; //"color"; //"abbreviation"; // "minutes"; //"name";
+    var ds1 = "name"; //"test1";
+    //ds1 = ds1.concat(token1);
+    //ds1 = ds1 +">";
+
+    //m_res = "<"+token1+">";
+
+    var t1 = "<" + tag + ">";
+    var t2 = "</" + tag + ">";
+
+
+ //   jsFiddleConsole.log("john3(),  tag = " + t2);
+
+
+    var n1 = xml.search(t1); // open tag location
+    var l1 = t1.length;
+    var n2 = xml.search(t2); // close tag location
+    var l2 = t2.length;
+    
+    var l = n2 - n1 - l2 + 1; // length of text value
+
+    // n1+l1 = start location of text value
+    var res = xml.substr(n1 + l1, l); // extract text value
+
+
+    return res;
+
+} // john3(tag,xml)
+
+*/
+
+
+
 
 
 
@@ -64,13 +136,13 @@ function fetchStockQuote(symbol, isInitMsg) {
   
 //  return;
   
- /* 
+ 
   var msg1 = {};
   msg1.Monday = 1;
   msg1.Tuesday = 2;
   //console.log("msg1 = ", msg1.toString());
-  console.log(msg1);
-  */
+  console.log("msg1 = ", msg1.toString());
+
   
   var response;
   var station = "PLZA"; // POWL DBRK? NBRK?
@@ -82,26 +154,70 @@ function fetchStockQuote(symbol, isInitMsg) {
   
   //req.open('GET', "http://api.bart.gov/api/etd.aspx?cmd=etd&orig=" + station + "&key=MW9S-E7SL-26DU-VV8V&dir=n", true);
   
+  // xml from bart.gov are being fetched OK
+  var url_xml = "http://api.bart.gov/api/etd.aspx?cmd=etd&orig=DBRK&key=MW9S-E7SL-26DU-VV8V&dir=N";
 
   //req.open('GET', "http://dev.markitondemand.com/Api/Quote/json?" + "symbol=" + symbol, true); // causing the problem
   
   // http://maksil.net/test1/json/json1.txt  // utf-8 does not work
-   req.open('GET', "http://maksil.net/test1/json/json2-ansi.txt", true); // this fixes the problem
+  
+  //var url_json = "http://dev.markitondemand.com/Api/Quote/json?" + "symbol=" + symbol;
+  //var url_json = "http://dev.markitondemand.com/Api/Quote/json?symbol=AAPL";
+  //var url_json = "http://dev.markitondemand.com";
+  //var url_json = "http://notfound12345.123"; // execution stops at req.onload
+  
+  var url_json = "http://maksil.net/test1/json/json2-ansi.txt";
+  //var url_json = "http://maksil.net/test1/json/json2-ansi.txt.not.found";
+  
+  
+  console.log(" before open() status = ", req.status);
+  console.log(" readyState = ", req.readyState);
+
+  
+  //req.open('GET', url_json, true); // true = async
+  // m_xml_bart_etd url_xml
+  req.open('GET', m_xml_bart_etd, true); // true = async
+  
+  
+  //req.open('GET', "http://maksil.net/test1/json/json2-ansi.txt", true); // this fixes the problem
   
  //  var xml2js = require('xml2js');
   
-   console.log(" DEBUG 00");
+  //console.log(" DEBUG 00, req.open() url = ",url_json);
+  console.log(" DEBUG 00, req.open() url = ",url_xml);
+  console.log(" status = ", req.status);
+  console.log(" readyState = ", req.readyState);
+  
   
   req.onload = function(e) {
     
        console.log(" DEBUG 01 - req.onload = function(e)");
     
     if (req.readyState == 4) {
+      console.log("req.readyState == 4");
+      
       // 200 - HTTP OK
       if(req.status == 200) {
-        console.log(" req.responseText  " + req.responseText);
-        response = JSON.parse(req.responseText); // java script object notation
+        var xml = req.responseText; // calling this twice appears to cause runtime problem
+        console.log("req.status == 200");
+        console.log(" req.responseText 20  " + xml);
+
+        // TODO: convert xml to json here
+        console.log("TODO: convert xml to json  " + john1()); // + xml.john3());
+
+console.log(" john3a() = " + john3a());
+
+        var minutes = john3("minutes",xml);
+        console.log(" minutes = " + minutes);
         
+        //response = JSON.parse(req.responseText); // JSON = java script object notation
+    
+        response = {"Data":{"Status":"SUCCESS","Name":"Autodesk Inc","Symbol":"ADSK","LastPrice":54.01, "0": 16, "1":"string1"}};
+
+        console.log("response = " + response);    // = [object Object]   
+        
+
+              
         var price;
         var marketCap;
         
@@ -111,6 +227,7 @@ function fetchStockQuote(symbol, isInitMsg) {
           Pebble.sendAppMessage({
             "price": "Not Found"});
         }
+        
         if (response.Data) {
           // data found, look for LastPrice
           //price = response.Data.LastPrice;
@@ -129,11 +246,15 @@ function fetchStockQuote(symbol, isInitMsg) {
             msg.symbol = symbol;
           }
           
-*/          
-          var s = "rand1";
-          var s1 = s.replace("1","16");
-          msg.price = "$" + price.toString();
-          msg.symbol = s1; //"JOHN"; //egd1,  this can be retreived from the cloud, does not need iOS companion app
+*/        
+          //var smbol_json = response.Data.Symbol;
+          console.log("json response.Data.Symbol  = " + response.Data.Symbol.toString());
+          console.log("json response.Data.LastPrice = s" + response.Data.LastPrice.toString());
+          
+          var s = "ver1";
+          var s1 = s.replace("1",build_num);
+          msg.price = minutes.toString() + "  min";
+          msg.symbol = m_station; //"dbrk"; //s1; //"JOHN"; //egd1,  this can be retreived from the cloud, does not need iOS companion app
           Pebble.sendAppMessage(msg);
           //Pebble.sendAppMessage( { '0': 16, '1':'string1'});
           //Pebble.sendAppMessage( { 'price': 16});
@@ -144,21 +265,50 @@ function fetchStockQuote(symbol, isInitMsg) {
           
           
           
-        }
-      } else {
+        } // if (response.Data)
+        
+      } // if (req.readyState == 4)
+      
+      else {
         console.log("Request returned error code " + req.status.toString());
       }
-    }
+    
+    } // if (req.readyState == 4)
+  
+  }; // req.onload = function(e) 
+  
+  
+  
+ 
+req.error = function(e) {
+            console.log("req.error called. Error: " + e);
+        };
+
+
+req.onreadystatechange = function(){
+            console.log("req.onreadystatechange called. readyState: " + this.readyState);
+        };
+ 
+  
+req.onerror = function(e) {
+    console.log("onerror = " + e.error);
   };
+
+  
+  console.log("req.send() 1");
   
   req.send(null);
+  
+  console.log("req.send() 2");
 
-}
 
+
+}  // function fetchStockQuote(symbol, isInitMsg) { ... }
 
 
 
 /*
+
 
 // Set callback for the app ready event
 Pebble.addEventListener("ready",
@@ -178,7 +328,7 @@ console.log("Pebble.addEventListener(...) symbol = " + symbol);
                           
                           var isInitMsg = true;
                           
-                          fetchStockQuote(symbol, isInitMsg);
+                    //      fetchStockQuote(symbol, isInitMsg);
                           //fetchStockQuote("AAPL", isInitMsg);  //egd2 ADSK  AAPL MSFT GOOG
                           
                         });
@@ -219,4 +369,5 @@ Pebble.addEventListener("appmessage",
                             isInitMsg = false;
                             fetchStockQuote(symbol, isInitMsg);
                           }
-                        });
+                        
+                        }); // Pebble.addEventListener(...)

@@ -1,6 +1,7 @@
 
 // quotes, BART Realtime
-// verson .04
+// verson .05
+// 2015-05-10
 
 #include <pebble.h>
 
@@ -203,7 +204,7 @@ static void window_load(Window *window) {
   //text_layer_set_text(symbol_layer, "AAPL"); //egd2 ADSK GOOG
   text_layer_set_text(symbol_layer, symbol1); //egd1
   text_layer_set_text_alignment(symbol_layer, GTextAlignmentCenter);
-  text_layer_set_font(symbol_layer, fonts_get_system_font(FONT_KEY_BITHAM_42_BOLD));
+  text_layer_set_font(symbol_layer, fonts_get_system_font(FONT_KEY_BITHAM_42_BOLD)); //FONT_KEY_GOTHIC_28_BOLD)); // FONT_KEY_BITHAM_34_MEDIUM_NUMBERS)); // FONT_KEY_BITHAM_42_BOLD));
   layer_add_child(window_layer, text_layer_get_layer(symbol_layer));
 
   price_layer = text_layer_create(
