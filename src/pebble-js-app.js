@@ -1,6 +1,8 @@
 
 // var xml = require('xml'); // does not appear to be required, methods from other js modules are accessible, 2015-05-10 john
 
+// https://developer.getpebble.com/docs/pebblejs/#require-path
+
 /*
 
 [PHONE] pebble-app.js:?: ReferenceError: require is not defined
@@ -9,7 +11,7 @@
 
 */
 
-var build_num = "06a";
+//var build_num = "06a";
 
 
 var m_station = "DBRK"; //"WOAK"; //"DBRK"; //"POWL"; //"PLZA";
@@ -26,7 +28,7 @@ var symbol = defaultSymbol;
 
 //var test = require("yo");
 
-  var req1 = new XMLHttpRequest();
+var req1 = new XMLHttpRequest();
 
 var rand1 = Math.random();
 
@@ -174,6 +176,14 @@ function fetchStockQuote(symbol, isInitMsg) {
   console.log(" before open() status = ", req.status);
   console.log(" readyState = ", req.readyState);
 
+ 
+  
+  if (m_station.toUpperCase() == "DBRK")
+    { m_direction = "N"}
+  else if (m_station.toUpperCase() == "PLZA")
+    { m_direction = "S"}
+  
+  m_xml_bart_etd = "http://api.bart.gov/api/etd.aspx?cmd=etd&orig=" + m_station + "&key=MW9S-E7SL-26DU-VV8V&dir=" + m_direction;
   
   //req.open('GET', url_json, true); // true = async
   // m_xml_bart_etd url_xml
@@ -254,8 +264,8 @@ console.log(" john3a() = " + john3a());
           console.log("json response.Data.Symbol  = " + response.Data.Symbol.toString());
           console.log("json response.Data.LastPrice = s" + response.Data.LastPrice.toString());
           
-          var s = "ver1";
-          var s1 = s.replace("1",build_num);
+          //var s = "ver1";
+          //var s1 = s.replace("1",build_num);
           msg.price = minutes.toString() + "  min";
           msg.symbol = symbol; //m_station; //"dbrk"; //s1; //"JOHN"; //egd1,  this can be retreived from the cloud, does not need iOS companion app
           Pebble.sendAppMessage(msg);
@@ -362,7 +372,7 @@ Pebble.addEventListener("appmessage",
  //                         window.navigator.
 
                           console.log("Pebble.addEventListener(message) e.type = " + e.type);                          
-                          console.log("Pebble.addEventListener(...) symbol = " + symbol);
+                          console.log("Pebble.addEventListener(...) previous symbol = " + symbol);
                           
                             console.log("message");
                           
@@ -385,7 +395,7 @@ Pebble.addEventListener("appmessage",
                           }
                           else if (e.payload.symbol) {
                             console.log("else if (e.payload.symbol)");                            
-                            symbol = e.payload.symbol;
+                            m_station = symbol = e.payload.symbol;
                             localStorage.setItem("symbol", symbol);
                             isInitMsg = false;
                             fetchStockQuote(symbol, isInitMsg);

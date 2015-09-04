@@ -1,7 +1,8 @@
 //#include <pebble.h>
 
 // BART Realtime3
-// verson .08
+// verson .09
+// 2015-08-30  replaced Leaving with 0; sort ascending
 // 2015-08-29  added // process multiple <etd>  function john4(tag, xml, level) {
 // 2015-06-26  renamed quotes.c to bart.c, deleted antry.c/h, added version info to UI
 // 2015-06-21  fixed crash problem
@@ -10,13 +11,17 @@
 // original source code
 // https://github.com/pebble/pebble-sdk-examples/tree/master/pebblekit-js/quotes
 
+
+// https://developer.getpebble.com/
+
+
 #include <pebble.h>
 
 //#include "entry.h"
 
   
   
-#define STR_APPVERSION_BUFFER "v0.08"
+#define STR_APPVERSION_BUFFER "v0.09"
 
   
 static Window    *window;
@@ -32,7 +37,7 @@ static bool dataInited;
 static int refreshKey;
 static char *refreshSymbol;
 
-static char symbol1[] = "AAP1";
+static char symbol1[] = "DBRK";
 
 enum {
   QUOTE_KEY_INIT = 0x0,
@@ -190,6 +195,9 @@ static void app_message_init(void) {
   app_message_open(64, 64);
 }
 
+
+
+// --------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------
 
 
@@ -198,7 +206,7 @@ static void up_click_handler(ClickRecognizerRef recognizer, void *context) {
   APP_LOG(APP_LOG_LEVEL_DEBUG, "[BUTTON] up_click_handler(...)");
 
     text_layer_set_text(price_layer, "UP...");
-    set_symbol_msg("UP"); //egd1
+    set_symbol_msg("PLZA"); //egd1
   
  // return;
   
@@ -210,7 +218,7 @@ static void down_click_handler(ClickRecognizerRef recognizer, void *context) {
   APP_LOG(APP_LOG_LEVEL_DEBUG, "[BUTTON] down_click_handler(...)");
 
     text_layer_set_text(price_layer, "DOWN...");
-    set_symbol_msg("DOWN"); //egd1  
+    set_symbol_msg("DBRK"); //egd1  
   
 //  return;
   
@@ -228,11 +236,11 @@ static void select_click_handler(ClickRecognizerRef recognizer, void *context) {
  //  set_symbol_msg("GOOG");
   
   // refresh
-  text_layer_set_text(price_layer, "1-Loading...");
+  text_layer_set_text(price_layer, "SELECT...");
  
   // this works! egd 2015-06-21
   //set_symbol_msg(symbol1); //egd1
-  set_symbol_msg("SEL"); //egd1
+  set_symbol_msg("DBRK"); //egd1
   
   // crashes here from the watch but not from emulator
 //  send_to_phone(QUOTE_KEY_FETCH);
@@ -271,6 +279,8 @@ static void click_config_provider(void *context) {
 
 // --------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------
+
+
 
 
 static void window_load(Window *window) {

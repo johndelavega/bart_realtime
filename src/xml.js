@@ -62,7 +62,7 @@ var m_minutes = [];
 function john4(tag, xml, level) {
 
 
-    m_minutes = []; // clear reset empty
+  //  m_minutes = []; // clear reset empty | // reseting it here will only process the last etd
 
     var xml_len = xml.length;
 
@@ -168,18 +168,63 @@ function john4(tag, xml, level) {
     //return "version 20, array len = " + m_minutes.length; //john3("abbr",m_xml) + " = " + john3("name",m_xml);
     return m_minutes;
 
-} // john4(tag,xml)
+} // john4(tag, xml, level)
+
+
 
 
 //------------------------------------------------------------
 
 function john5(tag, xml, level) {
 
+/*  
+    var test = [7, 9, "Leaving", 2, 4];
+    var len1 = test.length;
+    var test1 = [];
+
+    // replace "Leaving" with 0
+    test.forEach(function (entry) {
+        if ((entry.toString()).toUpperCase() == "LEAVING")
+            test1.push(0);
+        else
+            test1.push(entry);
+    })
+*/    
+  
+  
+  
+    m_minutes = []; // reset
+
     var return1 = john4(tag, xml, level);
 
-    // return as json and process it here
+  
+    // replace "Leaving" with 0
+    var return2 = [];
+    return1.forEach(function (entry) {
+        if ((entry.toString()).toUpperCase() == "LEAVING")
+            return2.push(0);
+        else
+            return2.push(entry);
+    });
 
-    return return1;
+    return1 = return2;
+
+    return1.sort(function (a, b) { return a - b; }); // ascending;  b - a for descending  
+  
+  
+  
+    // return as json and process it here
+  
+    var returnStr = return1.toString();
+
+//    var lenA = return1.length;
+//    var lenS = returnStr.length;
+
+    returnStr = returnStr.replace("Leaving", "0");
+
+// points.sort(function(a, b){return a-b});
+
+    return returnStr;
 }
 
 //------------------------------------------------------------
