@@ -1,6 +1,6 @@
 
 // quotes, BART Realtime
-// verson .02
+// verson .03
 
 #include <pebble.h>
 
@@ -25,7 +25,9 @@ enum {
 
 static bool send_to_phone_multi(int quote_key, char *symbol) {
   
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "send_to_phone_multi(...)");
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "send_to_phone_multi(...) quote_key = %d, symbol = %s", quote_key, symbol);
+  
+  APP_LOG(APP_LOG_LEVEL_DEBUG,  symbol);
   
 //egd1  return false;
   
@@ -37,7 +39,7 @@ static bool send_to_phone_multi(int quote_key, char *symbol) {
   DictionaryIterator *iter;
   app_message_outbox_begin(&iter);
   if (iter == NULL) {
-    APP_LOG(APP_LOG_LEVEL_DEBUG, "null iter");
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "null iter1");
     return false;
   }
 
@@ -47,6 +49,7 @@ static bool send_to_phone_multi(int quote_key, char *symbol) {
   dict_write_tuplet(iter, &tuple);
   dict_write_end(iter);
 
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "send_to_phone_multi(...) / app_message_outbox_send()");
   app_message_outbox_send();
   return true;
 }
@@ -54,10 +57,11 @@ static bool send_to_phone_multi(int quote_key, char *symbol) {
 
 
 static void send_to_phone(int quote_key) {
-    APP_LOG(APP_LOG_LEVEL_DEBUG, "send_to_phone(...)");
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "send_to_phone(...)  quote_key = %d", quote_key);
 
   
   bool queued = send_to_phone_multi(quote_key, NULL);
+  
   if (!queued && (refreshKey == -1) && (refreshSymbol == NULL)) {
     refreshKey = quote_key;
   }
@@ -65,15 +69,18 @@ static void send_to_phone(int quote_key) {
 
 
 static void set_symbol_msg(char *symbolName) {
-      APP_LOG(APP_LOG_LEVEL_DEBUG, "set_symbol_msg(...)");
+      APP_LOG(APP_LOG_LEVEL_DEBUG, "set_symbol_msg(...) = %s", symbolName );
 
+    //    APP_LOG(APP_LOG_LEVEL_DEBUG, *symbolName );
   
   bool queued = send_to_phone_multi(QUOTE_KEY_SYMBOL, symbolName);
+  
   if (!queued) {
     refreshKey = QUOTE_KEY_SYMBOL;
     refreshSymbol = symbolName;
   }
 }
+
 
 
 
@@ -85,9 +92,10 @@ static void in_received_handler(DictionaryIterator *iter, void *context) {
   
   Tuple *init_tuple = dict_find(iter, QUOTE_KEY_INIT);
   Tuple *symbol_tuple = dict_find(iter, QUOTE_KEY_SYMBOL);
-  //Tuple *price_tuple = dict_find(iter, QUOTE_KEY_PRICE);
-Tuple *price_tuple = dict_find(iter, 0x1);
+  Tuple *price_tuple = dict_find(iter, QUOTE_KEY_PRICE);
+//Tuple *price_tuple = dict_find(iter, 0x1);  //egd1
   
+ //    APP_LOG(APP_LOG_LEVEL_DEBUG, " symbol_tuple = %d, %s", symbol_tuple, symbol_tuple); 
   
   if (init_tuple) {
  APP_LOG(APP_LOG_LEVEL_DEBUG, "if (init_tuple)");    
@@ -110,7 +118,7 @@ Tuple *price_tuple = dict_find(iter, 0x1);
   }
  
   if (price_tuple) {
-APP_LOG(APP_LOG_LEVEL_DEBUG, "if (price_tuple)"); 
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "if (price_tuple)"); 
     strncpy(price, price_tuple->value->cstring, 10);
     text_layer_set_text(price_layer, price);
   }
@@ -123,6 +131,9 @@ APP_LOG(APP_LOG_LEVEL_DEBUG, "if (price_tuple)");
  //    APP_LOG(APP_LOG_LEVEL_DEBUG, price); 
   APP_LOG(APP_LOG_LEVEL_DEBUG, "in_received_handler(...) EXIT"); 
   
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "padding 1"); 
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "padding 2"); 
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "padding 3"); 
 }
 
 
@@ -157,16 +168,22 @@ static void app_message_init(void) {
 }
 
 static void select_click_handler(ClickRecognizerRef recognizer, void *context) {
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "select_click_handler(...)"); 
+  
+   set_symbol_msg("GOOG");
+  
   // refresh
-  text_layer_set_text(price_layer, "Loading...");
+  text_layer_set_text(price_layer, "1-Loading...");
   send_to_phone(QUOTE_KEY_FETCH);
+
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "select_click_handler(...) EXIT");   
 }
 
 static void select_long_click_handler(ClickRecognizerRef recognizer, void *context) {
   // refresh
   entry_get_name(symbol, set_symbol_msg);
   text_layer_set_text(symbol_layer, symbol);
-  text_layer_set_text(price_layer, "Loading...");
+  text_layer_set_text(price_layer, "2-Loading...");
 }
 
 static void click_config_provider(void *context) {
@@ -181,7 +198,7 @@ static void window_load(Window *window) {
 
   symbol_layer = text_layer_create(
       (GRect) { .origin = { 0, 20 }, .size = { bounds.size.w, 50 } });
-  text_layer_set_text(symbol_layer, "AAPL"); //egd2
+  text_layer_set_text(symbol_layer, "AAPL"); //egd2 ADSK GOOG
   text_layer_set_text_alignment(symbol_layer, GTextAlignmentCenter);
   text_layer_set_font(symbol_layer, fonts_get_system_font(FONT_KEY_BITHAM_42_BOLD));
   layer_add_child(window_layer, text_layer_get_layer(symbol_layer));
@@ -193,7 +210,8 @@ static void window_load(Window *window) {
   text_layer_set_font(price_layer, fonts_get_system_font(FONT_KEY_GOTHIC_28));
   layer_add_child(window_layer, text_layer_get_layer(price_layer));
 
-  send_to_phone(QUOTE_KEY_INIT);
+  send_to_phone(QUOTE_KEY_INIT); //dbg1
+ // set_symbol_msg("GOOG");  
   wasFirstMsg = true;
 }
 
