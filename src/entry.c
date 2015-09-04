@@ -1,4 +1,4 @@
-﻿#include <pebble.h>
+#include <pebble.h>
 
 #include "entry.h"
 

@@ -1,4 +1,8 @@
-﻿#include <pebble.h>
+
+// quotes, BART Realtime
+// verson .02
+
+#include <pebble.h>
 
 #include "entry.h"
 
@@ -16,7 +20,7 @@ enum {
   QUOTE_KEY_INIT = 0x0,
   QUOTE_KEY_FETCH = 0x1,
   QUOTE_KEY_SYMBOL = 0x2,
-  QUOTE_KEY_PRICE = 0x03,
+  QUOTE_KEY_PRICE = 0x3,
 };
 
 static bool send_to_phone_multi(int quote_key, char *symbol) {
@@ -81,31 +85,54 @@ static void in_received_handler(DictionaryIterator *iter, void *context) {
   
   Tuple *init_tuple = dict_find(iter, QUOTE_KEY_INIT);
   Tuple *symbol_tuple = dict_find(iter, QUOTE_KEY_SYMBOL);
-  Tuple *price_tuple = dict_find(iter, QUOTE_KEY_PRICE);
-
+  //Tuple *price_tuple = dict_find(iter, QUOTE_KEY_PRICE);
+Tuple *price_tuple = dict_find(iter, 0x1);
+  
+  
   if (init_tuple) {
+ APP_LOG(APP_LOG_LEVEL_DEBUG, "if (init_tuple)");    
     // only accept one initial tuple; the second may be a server reply to
     // an out-of-date action on our part
     if (dataInited) {
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "if (dataInited) ");      
       return;
     }
     else {
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "if (dataInited) else");        
       dataInited = true;
     }
   }
+  
   if (symbol_tuple) {
+ APP_LOG(APP_LOG_LEVEL_DEBUG, "if (symbol_tuple)");     
     strncpy(symbol, symbol_tuple->value->cstring, 5);
     text_layer_set_text(symbol_layer, symbol);
   }
+ 
   if (price_tuple) {
+APP_LOG(APP_LOG_LEVEL_DEBUG, "if (price_tuple)"); 
     strncpy(price, price_tuple->value->cstring, 10);
     text_layer_set_text(price_layer, price);
   }
+ 
+  
+//  text_layer_set_text(price_layer, "$002.00");
+  
+  
+  //egd1
+ //    APP_LOG(APP_LOG_LEVEL_DEBUG, price); 
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "in_received_handler(...) EXIT"); 
+  
 }
+
+
+
 
 static void in_dropped_handler(AppMessageResult reason, void *context) {
   APP_LOG(APP_LOG_LEVEL_DEBUG, "App Message Dropped!");
 }
+
+
 
 static void out_failed_handler(DictionaryIterator *failed, AppMessageResult reason, void *context) {
   
@@ -118,6 +145,7 @@ static void out_failed_handler(DictionaryIterator *failed, AppMessageResult reas
   }
   wasFirstMsg = false;
 }
+
 
 static void app_message_init(void) {
   // Register message handlers
@@ -153,7 +181,7 @@ static void window_load(Window *window) {
 
   symbol_layer = text_layer_create(
       (GRect) { .origin = { 0, 20 }, .size = { bounds.size.w, 50 } });
-  text_layer_set_text(symbol_layer, "AAPL");
+  text_layer_set_text(symbol_layer, "AAPL"); //egd2
   text_layer_set_text_alignment(symbol_layer, GTextAlignmentCenter);
   text_layer_set_font(symbol_layer, fonts_get_system_font(FONT_KEY_BITHAM_42_BOLD));
   layer_add_child(window_layer, text_layer_get_layer(symbol_layer));

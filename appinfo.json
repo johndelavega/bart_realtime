@@ -1,0 +1,19 @@
+{
+    "appKeys": {},
+    "capabilities": [
+        ""
+    ],
+    "companyName": "hello.elvis@gmail.com",
+    "longName": "BART Realtime",
+    "projectType": "native",
+    "resources": {
+        "media": []
+    },
+    "shortName": "BART Realtime",
+    "uuid": "0f18ff7d-6e2c-42a4-a34d-8ff8d1c2e8a4",
+    "versionCode": 1,
+    "versionLabel": "1.0",
+    "watchapp": {
+        "watchface": false
+    }
+}
