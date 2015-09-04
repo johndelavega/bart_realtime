@@ -20,6 +20,11 @@ enum {
 };
 
 static bool send_to_phone_multi(int quote_key, char *symbol) {
+  
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "send_to_phone_multi(...)");
+  
+//egd1  return false;
+  
   if ((quote_key == -1) && (symbol == NULL)) {
     APP_LOG(APP_LOG_LEVEL_DEBUG, "no data to send");
     // well, the "nothing" that was sent to us was queued, anyway ...
@@ -42,14 +47,23 @@ static bool send_to_phone_multi(int quote_key, char *symbol) {
   return true;
 }
 
+
+
 static void send_to_phone(int quote_key) {
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "send_to_phone(...)");
+
+  
   bool queued = send_to_phone_multi(quote_key, NULL);
   if (!queued && (refreshKey == -1) && (refreshSymbol == NULL)) {
     refreshKey = quote_key;
   }
 }
 
+
 static void set_symbol_msg(char *symbolName) {
+      APP_LOG(APP_LOG_LEVEL_DEBUG, "set_symbol_msg(...)");
+
+  
   bool queued = send_to_phone_multi(QUOTE_KEY_SYMBOL, symbolName);
   if (!queued) {
     refreshKey = QUOTE_KEY_SYMBOL;
@@ -57,7 +71,14 @@ static void set_symbol_msg(char *symbolName) {
   }
 }
 
+
+
 static void in_received_handler(DictionaryIterator *iter, void *context) {
+  
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "in_received_handler(...)");
+  
+//egd1  return;
+  
   Tuple *init_tuple = dict_find(iter, QUOTE_KEY_INIT);
   Tuple *symbol_tuple = dict_find(iter, QUOTE_KEY_SYMBOL);
   Tuple *price_tuple = dict_find(iter, QUOTE_KEY_PRICE);
@@ -87,6 +108,9 @@ static void in_dropped_handler(AppMessageResult reason, void *context) {
 }
 
 static void out_failed_handler(DictionaryIterator *failed, AppMessageResult reason, void *context) {
+  
+      APP_LOG(APP_LOG_LEVEL_DEBUG, "out_failed_handler(...)");
+  
   if (wasFirstMsg && dataInited) {
   }
   else {
@@ -121,13 +145,15 @@ static void click_config_provider(void *context) {
   window_single_click_subscribe(BUTTON_ID_SELECT, select_click_handler);
   window_long_click_subscribe(BUTTON_ID_SELECT, 0, select_long_click_handler, NULL);
 }
+
+
 static void window_load(Window *window) {
   Layer *window_layer = window_get_root_layer(window);
   GRect bounds = layer_get_bounds(window_layer);
 
   symbol_layer = text_layer_create(
       (GRect) { .origin = { 0, 20 }, .size = { bounds.size.w, 50 } });
-  text_layer_set_text(symbol_layer, "PBL");
+  text_layer_set_text(symbol_layer, "AAPL");
   text_layer_set_text_alignment(symbol_layer, GTextAlignmentCenter);
   text_layer_set_font(symbol_layer, fonts_get_system_font(FONT_KEY_BITHAM_42_BOLD));
   layer_add_child(window_layer, text_layer_get_layer(symbol_layer));
@@ -143,12 +169,17 @@ static void window_load(Window *window) {
   wasFirstMsg = true;
 }
 
+
 static void window_unload(Window *window) {
   text_layer_destroy(symbol_layer);
   text_layer_destroy(price_layer);
 }
 
+
 static void init(void) {
+  
+      APP_LOG(APP_LOG_LEVEL_DEBUG, "init(...)");
+  
   wasFirstMsg = false;
   dataInited = false;
   refreshKey = -1;
@@ -170,9 +201,11 @@ static void init(void) {
   window_stack_push(window, animated);
 }
 
+
 static void deinit(void) {
   window_destroy(window);
 }
+
 
 int main(void) {
   init();
