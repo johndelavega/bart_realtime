@@ -1,6 +1,7 @@
 
 // quotes, BART Realtime
-// verson .05
+// verson .06
+// 2015-06-21  fixed crash problem
 // 2015-05-10
 
 #include <pebble.h>
@@ -170,19 +171,35 @@ static void app_message_init(void) {
   app_message_open(64, 64);
 }
 
+
+
 static void select_click_handler(ClickRecognizerRef recognizer, void *context) {
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "select_click_handler(...)"); 
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "[BUTTON] quotes.c:select_click_handler(...)"); 
+//  return;
   
-   set_symbol_msg("GOOG");
+ //  set_symbol_msg("GOOG");
   
   // refresh
   text_layer_set_text(price_layer, "1-Loading...");
-  send_to_phone(QUOTE_KEY_FETCH);
+ 
+  // this works! egd 2015-06-21
+  set_symbol_msg(symbol1); //egd1
+  
+  // crashes here from the watch but not from emulator
+//  send_to_phone(QUOTE_KEY_FETCH);
 
+  
   APP_LOG(APP_LOG_LEVEL_DEBUG, "select_click_handler(...) EXIT");   
 }
 
+
+
 static void select_long_click_handler(ClickRecognizerRef recognizer, void *context) {
+
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "[BUTTON] quotes.c:select_long_click_handler(...)"); 
+  return;
+ 
+  
   // refresh
   entry_get_name(symbol, set_symbol_msg);
   text_layer_set_text(symbol_layer, symbol);

@@ -18,6 +18,10 @@ char *hs_name; // Pointer to put the name into.
 EntryCallback hs_callback;
 
 static void up_click_handler(ClickRecognizerRef recognizer, void *context) {
+
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "[BUTTON] up_click_handler(...)");
+  return;
+  
   if (ui.index < 4) {
     if (ui.entry_chars[ui.index][0] == 'Z')
       ui.entry_chars[ui.index][0] = 'A';
@@ -28,6 +32,11 @@ static void up_click_handler(ClickRecognizerRef recognizer, void *context) {
 }
 
 static void down_click_handler(ClickRecognizerRef recognizer, void *context) {
+
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "[BUTTON] down_click_handler(...)");
+  return;
+  
+  
   if (ui.index < 4) {
     if (ui.entry_chars[ui.index][0] == 'A')
       ui.entry_chars[ui.index][0] = 'Z';
@@ -38,6 +47,11 @@ static void down_click_handler(ClickRecognizerRef recognizer, void *context) {
 }
 
 static void select_click_handler(ClickRecognizerRef recognizer, void *context) {
+
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "[BUTTON] entry.c:select_click_handler(...)");
+  return;
+ 
+  
   if (ui.index == 3)
     ui.index = 0;
   else
@@ -53,6 +67,12 @@ static void select_click_handler(ClickRecognizerRef recognizer, void *context) {
 }
 
 static void select_long_click_handler(ClickRecognizerRef recognizer, void *context) {
+
+
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "[BUTTON] select_long_click_handler(...)");
+  return;
+
+  
   if (ui.entry_chars[3][0] == '\0')
     ui.entry_chars[3][0] = 'A';
   else
