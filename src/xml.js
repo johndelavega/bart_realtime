@@ -8,6 +8,9 @@ function john3a() {
 }
 
 
+
+
+
 // extract text value based on a tag
 function john3(tag, xml) {
 

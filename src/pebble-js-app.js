@@ -9,7 +9,7 @@
 
 */
 
-var build_num = "05";
+var build_num = "06a";
 
 
 var m_station = "DBRK"; //"WOAK"; //"DBRK"; //"POWL"; //"PLZA";
@@ -254,7 +254,7 @@ console.log(" john3a() = " + john3a());
           var s = "ver1";
           var s1 = s.replace("1",build_num);
           msg.price = minutes.toString() + "  min";
-          msg.symbol = m_station; //"dbrk"; //s1; //"JOHN"; //egd1,  this can be retreived from the cloud, does not need iOS companion app
+          msg.symbol = symbol; //m_station; //"dbrk"; //s1; //"JOHN"; //egd1,  this can be retreived from the cloud, does not need iOS companion app
           Pebble.sendAppMessage(msg);
           //Pebble.sendAppMessage( { '0': 16, '1':'string1'});
           //Pebble.sendAppMessage( { 'price': 16});
