@@ -6,7 +6,7 @@ var symbol = defaultSymbol;
 
   var req1 = new XMLHttpRequest();
 
-
+var rand1 = Math.random();
 
 //var doc2 = new DOMParser();  // ReferenceError: Can't find variable: DOMParser
 
@@ -33,9 +33,14 @@ var string = '<!DOCTYPE html><html><head></head><body>content</body></html>';
 // & send the stock price back to the watch via app message
 // API documentation at http://dev.markitondemand.com/#doc
 function fetchStockQuote(symbol, isInitMsg) {
+ 
+  var rand2 = Math.random();
   
-  console.log("fetchStockQuote(...)");
-//  console.log(doc1);
+//  console.log("fetchStockQuote(...)  rand2 = ",rand2);
+
+    console.log("fetchStockQuote(...)  symbol = ", symbol);
+  
+  //  console.log(doc1);
   
 //  JSON.parse("test");
   
@@ -59,6 +64,14 @@ function fetchStockQuote(symbol, isInitMsg) {
   
 //  return;
   
+ /* 
+  var msg1 = {};
+  msg1.Monday = 1;
+  msg1.Tuesday = 2;
+  //console.log("msg1 = ", msg1.toString());
+  console.log(msg1);
+  */
+  
   var response;
   var station = "PLZA"; // POWL DBRK? NBRK?
   var req = new XMLHttpRequest();
@@ -67,14 +80,22 @@ function fetchStockQuote(symbol, isInitMsg) {
 
   //req.open('GET', "http://api.bart.gov/api/etd.aspx?cmd=etd&orig=PLZA&key=MW9S-E7SL-26DU-VV8V&dir=n", true);
   
- // req.open('GET', "http://api.bart.gov/api/etd.aspx?cmd=etd&orig=" + station + "&key=MW9S-E7SL-26DU-VV8V&dir=n", true);
+  //req.open('GET', "http://api.bart.gov/api/etd.aspx?cmd=etd&orig=" + station + "&key=MW9S-E7SL-26DU-VV8V&dir=n", true);
   
 
-  req.open('GET', "http://dev.markitondemand.com/Api/Quote/json?" + "symbol=" + symbol, true);
+  //req.open('GET', "http://dev.markitondemand.com/Api/Quote/json?" + "symbol=" + symbol, true); // causing the problem
+  
+  // http://maksil.net/test1/json/json1.txt  // utf-8 does not work
+   req.open('GET', "http://maksil.net/test1/json/json2-ansi.txt", true); // this fixes the problem
   
  //  var xml2js = require('xml2js');
   
+   console.log(" DEBUG 00");
+  
   req.onload = function(e) {
+    
+       console.log(" DEBUG 01 - req.onload = function(e)");
+    
     if (req.readyState == 4) {
       // 200 - HTTP OK
       if(req.status == 200) {
@@ -92,20 +113,27 @@ function fetchStockQuote(symbol, isInitMsg) {
         }
         if (response.Data) {
           // data found, look for LastPrice
-          price = response.Data.LastPrice;
+          //price = response.Data.LastPrice;
+          price = rand2;
           console.log("debug01 " + price);
           marketCap = response.Data.MarketCap;  //   {"Data":{ ... ,"MarketCap":13239446990, ... }}
 
           
           var msg = {};
-/*          
+          
+/*        
+
           if (isInitMsg) {
 //            msg.ini = false;
             msg.init = true;
             msg.symbol = symbol;
           }
+          
 */          
+          var s = "rand1";
+          var s1 = s.replace("1","16");
           msg.price = "$" + price.toString();
+          msg.symbol = s1; //"JOHN"; //egd1,  this can be retreived from the cloud, does not need iOS companion app
           Pebble.sendAppMessage(msg);
           //Pebble.sendAppMessage( { '0': 16, '1':'string1'});
           //Pebble.sendAppMessage( { 'price': 16});
@@ -113,14 +141,24 @@ function fetchStockQuote(symbol, isInitMsg) {
           //Pebble.sendAppMessage( { '0': 'ok', '1': "$" + price.toString() }  ); //egd1 OK  JSON
           //Pebble.sendAppMessage( { '0': 'ok', '1': marketCap.toString() }  ); //egd1 OK
         
+          
+          
+          
         }
       } else {
         console.log("Request returned error code " + req.status.toString());
       }
     }
   };
+  
   req.send(null);
+
 }
+
+
+
+
+/*
 
 // Set callback for the app ready event
 Pebble.addEventListener("ready",
@@ -132,7 +170,7 @@ Pebble.addEventListener("ready",
                           // standard localStorage webAPI)
                           symbol = localStorage.getItem("symbol");
                           
-console.log("Pebble.addEventListener(...) symbol = " + symbol);                          
+console.log("Pebble.addEventListener(...) symbol = " + symbol);
                           
                           if (!symbol) {
                             symbol = "AAPL"; //egd1
@@ -145,12 +183,16 @@ console.log("Pebble.addEventListener(...) symbol = " + symbol);
                           
                         });
 
-
+*/
 
 // Set callback for appmessage events
 Pebble.addEventListener("appmessage",
                         function(e) {
  //                         window.navigator.
+
+                          console.log("Pebble.addEventListener(message) e.type = " + e.type);                          
+                          console.log("Pebble.addEventListener(...) symbol = " + symbol);
+                          
                             console.log("message");
                           
                             console.log("appmessage : e.payload = " + e.payload);

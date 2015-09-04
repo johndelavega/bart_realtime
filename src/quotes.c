@@ -1,6 +1,6 @@
 
 // quotes, BART Realtime
-// verson .03
+// verson .04
 
 #include <pebble.h>
 
@@ -9,12 +9,14 @@
 static Window *window;
 static TextLayer *symbol_layer;
 static TextLayer *price_layer;
-static char symbol[5];
+static char symbol[6]; //egd1 was 5 for stock symbol length
 static char price[10];
 static bool wasFirstMsg;
 static bool dataInited;
 static int refreshKey;
 static char *refreshSymbol;
+
+static char symbol1[] = "AAPL";
 
 enum {
   QUOTE_KEY_INIT = 0x0,
@@ -90,10 +92,10 @@ static void in_received_handler(DictionaryIterator *iter, void *context) {
   
 //egd1  return;
   
-  Tuple *init_tuple = dict_find(iter, QUOTE_KEY_INIT);
+  Tuple *init_tuple   = dict_find(iter, QUOTE_KEY_INIT);
   Tuple *symbol_tuple = dict_find(iter, QUOTE_KEY_SYMBOL);
-  Tuple *price_tuple = dict_find(iter, QUOTE_KEY_PRICE);
-//Tuple *price_tuple = dict_find(iter, 0x1);  //egd1
+  Tuple *price_tuple  = dict_find(iter, QUOTE_KEY_PRICE);
+//Tuple *price_tuple  = dict_find(iter, 0x1);  //egd1
   
  //    APP_LOG(APP_LOG_LEVEL_DEBUG, " symbol_tuple = %d, %s", symbol_tuple, symbol_tuple); 
   
@@ -112,8 +114,8 @@ static void in_received_handler(DictionaryIterator *iter, void *context) {
   }
   
   if (symbol_tuple) {
- APP_LOG(APP_LOG_LEVEL_DEBUG, "if (symbol_tuple)");     
-    strncpy(symbol, symbol_tuple->value->cstring, 5);
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "if (symbol_tuple)"); // JOHN
+    strncpy(symbol, symbol_tuple->value->cstring, 6); //egd1 was 5
     text_layer_set_text(symbol_layer, symbol);
   }
  
@@ -198,7 +200,8 @@ static void window_load(Window *window) {
 
   symbol_layer = text_layer_create(
       (GRect) { .origin = { 0, 20 }, .size = { bounds.size.w, 50 } });
-  text_layer_set_text(symbol_layer, "AAPL"); //egd2 ADSK GOOG
+  //text_layer_set_text(symbol_layer, "AAPL"); //egd2 ADSK GOOG
+  text_layer_set_text(symbol_layer, symbol1); //egd1
   text_layer_set_text_alignment(symbol_layer, GTextAlignmentCenter);
   text_layer_set_font(symbol_layer, fonts_get_system_font(FONT_KEY_BITHAM_42_BOLD));
   layer_add_child(window_layer, text_layer_get_layer(symbol_layer));
@@ -210,8 +213,9 @@ static void window_load(Window *window) {
   text_layer_set_font(price_layer, fonts_get_system_font(FONT_KEY_GOTHIC_28));
   layer_add_child(window_layer, text_layer_get_layer(price_layer));
 
-  send_to_phone(QUOTE_KEY_INIT); //dbg1
- // set_symbol_msg("GOOG");  
+ // send_to_phone(QUOTE_KEY_INIT); //dbg1
+ // set_symbol_msg("GOOG");
+   set_symbol_msg(symbol1); //egd1
   wasFirstMsg = true;
 }
 
