@@ -2,10 +2,8 @@
     "appKeys": {
         "fetch": 1,
         "init": 0,
-        "minutes": 5,
-        "price": 3,
-        "station": 4,
-        "symbol": 2
+        "minutes": 3,
+        "station": 2
     },
     "capabilities": [
         ""
